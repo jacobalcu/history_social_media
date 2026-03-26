@@ -2,6 +2,7 @@ from app.db.database import Base
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Uuid, String, DateTime, func, ForeignKey, Integer, Text
 from uuid import uuid4
+from app.models.associations import article_likes
 
 class Article(Base):
     __tablename__ = 'articles'

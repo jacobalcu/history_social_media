@@ -15,10 +15,10 @@ app.add_middleware(
     allow_headers=["*"], # Allows all headers (like our Authorization header)
 )
 
-app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
-app.include_router(users.router, prefix="/api/users", tags=["Users"])
-app.include_router(articles.router, prefix="/api/articles", tags=["Articles"])
-app.include_router(feed.router, prefix="/api/feed", tags=["Feed"])
+app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
+app.include_router(users.router, prefix="/users", tags=["Users"])
+app.include_router(articles.router, prefix="/articles", tags=["Articles"])
+app.include_router(feed.router, prefix="/feed", tags=["Feed"])
 
 
 

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from datetime import datetime
 from uuid import UUID
 from typing import Optional
@@ -7,6 +7,11 @@ from typing import Optional
 # For incoming data during signup
 class UserCreate(BaseModel):
     email: EmailStr
+    username: str
+    password: str = Field(..., min_length=8, max_length=72)
+
+# For incoming data during signup
+class UserLogin(BaseModel):
     username: str
     password: str
 
