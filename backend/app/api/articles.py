@@ -54,6 +54,12 @@ def get_explore_feed(skip: int = 0, limit: int = 10, db: Session = Depends(get_d
     articles = crud_article.get_explore_feed(db, skip, limit)
     return articles
 
+# Get the posts of people you follow
+@router.get("/following", response_model=list[ArticleResponse])
+def get_following_feed(skip: int = 0, limit: int = 10, db: Session = Depends(get_db), user_id: UUID = Depends(get_current_user_id)):
+    articles = crud_article.get_personal_feed(db, user_id, skip, limit)
+    return articles
+
 
 # Will insert row into article_likes table containing user id and article id
 @router.post("/{article_id}/toggle-like")

@@ -2,7 +2,7 @@
 from uuid import UUID
 from sqlalchemy.orm import Session
 from app.models.article import Article
-from app.models.associations import article_likes
+from app.models.associations import article_likes, user_follows
 from app.schemas.article import ArticleCreate, ArticleResponse, ArticleUpdate
 from datetime import datetime
 from typing import Optional
@@ -38,6 +38,23 @@ def get_explore_feed(db: Session, skip: int = 0, limit: int = 10):
         .offset(skip)\
         .limit(limit)\
         .all()
+    return articles
+
+# Get following feed
+# Add skip and limit for pagination
+def get_personal_feed(db: Session, user_id: UUID, skip: int = 0, limit: int = 10):
+    # Subquery
+    following_subquery = db.query(user_follows.c.followed_id).filter(
+        user_follows.c.follower_id == user_id
+    )
+    
+    articles = db.query(Article)\
+        .filter(Article.author_id.in_(following_subquery))\
+        .order_by(Article.created_at.desc())\
+        .offset(skip)\
+        .limit(limit)\
+        .all()
+        
     return articles
 
 # Get article by id
