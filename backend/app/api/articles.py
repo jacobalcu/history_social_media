@@ -1,9 +1,10 @@
 # Feed, creating posts, historical tags
 # User profiles, follows
 from uuid import UUID
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.schemas.article import ArticleCreate, ArticleResponse
+from app.crud import crud_article
 from app.db.database import get_db
 from app.api.auth import get_current_user_id
 from typing import List
@@ -15,27 +16,35 @@ router = APIRouter()
 @router.post("/", response_model=ArticleResponse)
 def create_article(article: ArticleCreate, user_id: UUID = Depends(get_current_user_id), db: Session = Depends(get_db)):
     # Create article, connect to user_id
-    pass
+    new_article = crud_article.create_article(db, article, user_id)
+    return new_article
 
 @router.get("/{article_id}", response_model=ArticleResponse)
 def get_article(article_id: UUID, db: Session = Depends(get_db)):
     # Get article by id
-    pass
+    article = crud_article.get_one_article(db, article_id)
+    return article
+
+# Delete article
+@router.delete("/{article_id}")
+def delete_article(article_id: UUID, db: Session = Depends(get_db), user_id: UUID = Depends(get_current_user_id)):
+    # Get article by id
+    wasDeleted = crud_article.delete_article(db, article_id, user_id)
+    
+    if not wasDeleted:
+        raise HTTPException(status_code=404, detail="Delete Failed")
+    
+    return {"message": "Article deleted successfully"}
 
 # Will insert row into article_likes table containing user id and article id
-@router.post("/{article_id}/like")
-def like_article(article_id: UUID, user_id: UUID = Depends(get_current_user_id), db: Session = Depends(get_db)):
+@router.post("/{article_id}/toggle-like")
+def toggle_like(article_id: UUID, user_id: UUID = Depends(get_current_user_id), db: Session = Depends(get_db)):
     # Increment likes on article
     # Make sure not already liked
     # Add to users liked
-    pass
+    response = crud_article.toggle_like(db, article_id, user_id)
+    return response
 
-@router.delete("/{article_id}/like")
-def unlike_article(article_id: UUID, user_id: UUID = Depends(get_current_user_id), db: Session = Depends(get_db)):
-    # Make sure user liked
-    # Decrement likes on article
-    # Delete from user liked
-    pass
 
 
 
