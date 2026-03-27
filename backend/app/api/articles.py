@@ -36,6 +36,18 @@ def delete_article(article_id: UUID, db: Session = Depends(get_db), user_id: UUI
     
     return {"message": "Article deleted successfully"}
 
+# Put implies "replace whole thing"
+# Patch implies "partially update"
+@router.patch("/{article_id}", response_model=ArticleResponse)
+def update_article(article_id: UUID, article_update: ArticleUpdate, db: Session = Depends(get_db), user_id: UUID = Depends(get_current_user_id)):
+    article = crud_article.update_article(db, article_id, user_id, article_update)
+
+    if not article:
+        raise HTTPException(status_code=404, detail="Article not found")
+    
+    return article
+
+
 # Will insert row into article_likes table containing user id and article id
 @router.post("/{article_id}/toggle-like")
 def toggle_like(article_id: UUID, user_id: UUID = Depends(get_current_user_id), db: Session = Depends(get_db)):
@@ -44,6 +56,8 @@ def toggle_like(article_id: UUID, user_id: UUID = Depends(get_current_user_id), 
     # Add to users liked
     response = crud_article.toggle_like(db, article_id, user_id)
     return response
+
+
 
 
 

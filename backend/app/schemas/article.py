@@ -14,6 +14,13 @@ class ArticleBase(BaseModel):
 class ArticleCreate(ArticleBase):
     pass # Exact same as ArticleBase
 
+# Update schema: Every field is Optional
+class ArticleUpdate(BaseModel):
+    title: Optional[str]
+    content: Optional[str]
+    period_label: Optional[str]
+    historical_year: Optional[int]
+
 # Response Schema: What API returns back to client
 class ArticleResponse(ArticleBase):
     id: UUID

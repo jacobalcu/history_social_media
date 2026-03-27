@@ -3,7 +3,7 @@ from uuid import UUID
 from sqlalchemy.orm import Session
 from app.models.article import Article
 from app.models.associations import article_likes
-from app.schemas.article import ArticleCreate, ArticleResponse
+from app.schemas.article import ArticleCreate, ArticleResponse, ArticleUpdate
 from datetime import datetime
 from typing import Optional
 
@@ -33,6 +33,25 @@ def get_one_article(db: Session, article_id: UUID):
 # Get all articles, ordered, also paginated
 
 # Update article
+def update_article(db: Session, article_id: UUID, user_id: UUID, article_update: ArticleUpdate):
+    article = db.query(Article).filter(
+        Article.id == article_id,
+        Article.author_id == user_id).first()
+    
+    # Return None so router knows it failed
+    if not article:
+        return None
+
+    update_data = article_update.model_dump(exclude_unset=True)
+
+    for key, value in update_data.items():
+        setattr(article, key, value)
+
+    db.commit()
+    db.refresh(article)
+
+    return article
+    
 
 
 # Delete article 
