@@ -2,7 +2,7 @@
 from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.crud import crud_user
+from app.crud import crud_user, crud_article
 from app.schemas.user import UserResponse, UserUpdate
 from app.schemas.article import ArticleCreate, ArticleResponse
 from app.db.database import get_db
@@ -19,14 +19,37 @@ def edit_profile(user_update: UserUpdate, db: Session = Depends(get_db), user_id
     pass
 
 # Return user info
-@router.get("/{username}", response_model=UserResponse)
+@router.get("/{username}")
 def get_profile(username: str, db: Session = Depends(get_db)):
-    pass
+    # Get User by username
+    cur_user = crud_user.get_user_by_username(db, username)
+
+    if not cur_user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    followers = crud_user.get_follower_count(db, cur_user.id)
+    following = crud_user.get_following_count(db, cur_user.id)
+
+    # Sanitize cur_user manually
+    safe_user = UserResponse.model_validate(cur_user)
+
+    return {
+        "following": following,
+        "followers": followers,
+        "user": safe_user
+    }
 
 # Get user articles
 @router.get("/{username}/articles", response_model=List[ArticleResponse])
-def get_user_articles(username: str, db: Session = Depends(get_db)):
-    pass
+def get_user_articles(username: str, skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    user = crud_user.get_user_by_username(db, username)
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    user_articles = crud_article.get_author_articles(db, user.id, skip, limit)
+
+    return user_articles
 
 # Unfollow user
 @router.post("/{username}/follow")

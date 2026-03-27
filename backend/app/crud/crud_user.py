@@ -10,9 +10,6 @@ def get_user_by_id(db: Session, user_id: UUID):
     users = db.query(User).filter(User.id == user_id)
     return users.first()
 
-def get_followers(db: Session, user_id: UUID):
-    pass
-
 def get_user_by_email(db: Session, email: str):
     # Required to check if an email is already registered during signup
     users = db.query(User).filter(User.email == email)
@@ -34,6 +31,41 @@ def create_user(db: Session, user: UserCreate):
     db.refresh(new_user)    
     # 4. Return the new user object
     return new_user
+
+# Return number of followers of user
+def get_follower_count(db: Session, user_id: UUID):
+    # .count() tells the database to just send back an integer, ignoring the row data!
+    return db.query(user_follows).filter(
+        user_follows.c.followed_id == user_id
+    ).count()
+
+# Return number of accounts user is following
+def get_following_count(db: Session, user_id: UUID):
+    # .count() tells the database to just send back an integer, ignoring the row data!
+    return db.query(user_follows).filter(
+        user_follows.c.follower_id == user_id
+    ).count()
+
+# Use this for the dedicated GET /followers route
+def get_followers_list(db: Session, user_id: UUID, skip: int = 0, limit: int = 20):
+    followers = db.query(User).join(
+        user_follows, User.id == user_follows.c.follower_id
+    ).filter(
+        user_follows.c.followed_id == user_id
+    ).offset(skip).limit(limit).all()
+    
+    return followers
+
+# Use this for the dedicated GET /following route
+def get_following_list(db: Session, user_id: UUID, skip: int = 0, limit: int = 20):
+    following = db.query(User).join(
+        user_follows, User.id == user_follows.c.followed_id
+    ).filter(
+        user_follows.c.follower_id == user_id
+    ).offset(skip).limit(limit).all()
+    
+    return following
+
 
 # Follow/unfollow a user
 def toggle_follow(db: Session, other_user_id: UUID, user_id: UUID):
