@@ -47,6 +47,13 @@ def update_article(article_id: UUID, article_update: ArticleUpdate, db: Session 
     
     return article
 
+# Get the feed
+# Public so no need for user_id
+@router.get("/explore", response_model=list[ArticleResponse])
+def get_explore_feed(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    articles = crud_article.get_explore_feed(db, skip, limit)
+    return articles
+
 
 # Will insert row into article_likes table containing user id and article id
 @router.post("/{article_id}/toggle-like")

@@ -21,9 +21,24 @@ def create_article(db: Session, article: ArticleCreate, user_id: UUID):
 
 # Get all articles from one author
 # Add skip and limit for pagination
-def get_articles(db: Session, user_id: UUID, skip: int, limit: int):
-    articles = db.query(Article).filter(Article.author_id == user_id)
-    return articles.all()
+def get_author_articles(db: Session, author_id: UUID, skip: int = 0, limit: int = 10):
+    articles = db.query(Article)\
+        .filter(Article.author_id == author_id)\
+        .order_by(Article.created_at.desc())\
+        .offset(skip)\
+        .limit(limit)\
+        .all()
+    return articles
+
+# Get explore feed
+# Add skip and limit for pagination
+def get_explore_feed(db: Session, skip: int = 0, limit: int = 10):
+    articles = db.query(Article)\
+        .order_by(Article.created_at.desc())\
+        .offset(skip)\
+        .limit(limit)\
+        .all()
+    return articles
 
 # Get article by id
 def get_one_article(db: Session, article_id: UUID):
