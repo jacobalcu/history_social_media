@@ -48,7 +48,8 @@ def get_following_count(db: Session, user_id: UUID):
 
 # Use this for the dedicated GET /followers route
 def get_followers_list(db: Session, user_id: UUID, skip: int = 0, limit: int = 20):
-    followers = db.query(User).join(
+    # Specifically ask for User.id and User.username
+    followers = db.query(User.id, User.username).join(
         user_follows, User.id == user_follows.c.follower_id
     ).filter(
         user_follows.c.followed_id == user_id
@@ -58,7 +59,7 @@ def get_followers_list(db: Session, user_id: UUID, skip: int = 0, limit: int = 2
 
 # Use this for the dedicated GET /following route
 def get_following_list(db: Session, user_id: UUID, skip: int = 0, limit: int = 20):
-    following = db.query(User).join(
+    following = db.query(User.id, User.username).join(
         user_follows, User.id == user_follows.c.followed_id
     ).filter(
         user_follows.c.follower_id == user_id

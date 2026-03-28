@@ -3,7 +3,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.crud import crud_user, crud_article
-from app.schemas.user import UserResponse, UserUpdate
+from app.schemas.user import UserResponse, UserUpdate, UserSlimResponse
 from app.schemas.article import ArticleCreate, ArticleResponse
 from app.db.database import get_db
 from app.api.auth import get_current_user_id
@@ -39,6 +39,8 @@ def get_profile(username: str, db: Session = Depends(get_db)):
         "user": safe_user
     }
 
+
+
 # Get user articles
 @router.get("/{username}/articles", response_model=List[ArticleResponse])
 def get_user_articles(username: str, skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
@@ -61,6 +63,34 @@ def toggle_follow(username: str, db: Session = Depends(get_db), current_user_id:
 
     response = crud_user.toggle_follow(db, target_user.id, user_id=current_user_id)
     return response
+
+# Get user followers
+# Frontend will get next "page" by changing url skip parameter
+@router.get("/{username}/followers", response_model=List[UserSlimResponse])
+def get_followers(username: str, skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    user = crud_user.get_user_by_username(db, username)
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    followers_list = crud_user.get_followers_list(db, user.id, skip, limit)
+
+    # Contains only id and usernames of followers
+    return followers_list
+
+# Get user following
+# Frontend will get next "page" by changing url skip parameter
+@router.get("/{username}/following", response_model=List[UserSlimResponse])
+def get_following(username: str, skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    user = crud_user.get_user_by_username(db, username)
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    following_list = crud_user.get_following_list(db, user.id, skip, limit)
+
+    # Contains only id and usernames of followers
+    return following_list
 
 # Get all liked posts for user
 @router.get("/{username}/likes")

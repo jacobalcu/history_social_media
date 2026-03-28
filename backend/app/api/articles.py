@@ -7,9 +7,8 @@ from app.schemas.article import ArticleCreate, ArticleResponse
 from app.crud import crud_article
 from app.db.database import get_db
 from app.api.auth import get_current_user_id
-from typing import List
 
-# Default route will be /api/articles
+# Default route will be /articles
 router = APIRouter()
 
 # Create new article
@@ -46,19 +45,6 @@ def update_article(article_id: UUID, article_update: ArticleUpdate, db: Session 
         raise HTTPException(status_code=404, detail="Article not found")
     
     return article
-
-# Get the feed
-# Public so no need for user_id
-@router.get("/explore", response_model=list[ArticleResponse])
-def get_explore_feed(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    articles = crud_article.get_explore_feed(db, skip, limit)
-    return articles
-
-# Get the posts of people you follow
-@router.get("/following", response_model=list[ArticleResponse])
-def get_following_feed(skip: int = 0, limit: int = 10, db: Session = Depends(get_db), user_id: UUID = Depends(get_current_user_id)):
-    articles = crud_article.get_personal_feed(db, user_id, skip, limit)
-    return articles
 
 
 # Will insert row into article_likes table containing user id and article id
