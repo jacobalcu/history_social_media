@@ -8,7 +8,7 @@ class ArticleBase(BaseModel):
     title: str
     content: str
     period_label: Optional[str]
-    historical_year: int
+    historical_year: Optional[int]
 
 # Create Schema: What user sends in POST request body
 class ArticleCreate(ArticleBase):
@@ -25,6 +25,10 @@ class ArticleUpdate(BaseModel):
 class ArticleResponse(ArticleBase):
     id: UUID
     author_id: UUID
+    title: str
+    content: str
+    period_label: Optional[str]
+    historical_year: Optional[int]
     created_at: datetime
 
     # Tells Pydantic to read data even if it's not a dict

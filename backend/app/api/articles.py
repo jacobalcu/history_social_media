@@ -3,7 +3,7 @@
 from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.schemas.article import ArticleCreate, ArticleResponse
+from app.schemas.article import ArticleCreate, ArticleResponse, ArticleUpdate
 from app.crud import crud_article
 from app.db.database import get_db
 from app.api.auth import get_current_user_id
