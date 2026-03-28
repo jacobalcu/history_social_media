@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
+import axios from "axios";
 
 export default function Login() {
   const BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -7,6 +9,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,7 +21,7 @@ export default function Login() {
       });
       console.log("Success! User logged in.");
       // Save to context for all protected routes
-
+      login(response.data["access_token"]);
       // Navigate to following feed
       navigate("/feed");
     } catch (error) {
