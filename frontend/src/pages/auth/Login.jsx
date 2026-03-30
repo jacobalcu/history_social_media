@@ -22,8 +22,8 @@ export default function Login() {
       console.log("Success! User logged in.");
       // Save to context for all protected routes
       login(response.data["access_token"]);
-      // Navigate to following feed
-      navigate("/feed");
+      // Navigate to user profile
+      navigate(`/profile/${username}`);
     } catch (error) {
       console.error("Login Failed:", error.response?.data?.detail);
     }
