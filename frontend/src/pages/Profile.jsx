@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import ProfileHeader from "../components/ProfileHeader";
+import ArticleCard from "../components/ArticleCard";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -52,19 +54,11 @@ export default function Profile() {
   }
 
   return (
-    <div>
-      <h1>{profileData.user.username}</h1>
-      {profileData.user.bio && <p>{profileData.user.bio}</p>}{" "}
-      <div>
-        <p>{profileData.following} Following</p>
-        <p>{profileData.followers} Followers</p>
-      </div>
-      <div>
+    <div className="max-w-3xl mx-auto px-4">
+      <ProfileHeader profileData={profileData} />
+      <div className="mt-12 space-y-6">
         {articles.map((article) => (
-          <div key={article.id}>
-            <h2>{article.title}</h2>
-            <p>{article.content}</p>
-          </div>
+          <ArticleCard key={article.id} article={article} />
         ))}
       </div>
     </div>
