@@ -105,3 +105,19 @@ def toggle_follow(db: Session, other_user_id: UUID, user_id: UUID):
 
     # Return the new state so the frontend knows what to display
     return {"message": message, "followed": followed_status} 
+
+def check_if_following(db: Session, target_id: UUID, user_id: UUID):
+    # Prevent self-check
+    if user_id == target_id:
+        return {"message": "You cannot follow yourself", "followed": False}
+    
+    # Check if user already follows
+    is_following = db.query(user_follows).filter(
+        user_follows.c.follower_id == user_id,
+        user_follows.c.followed_id == target_id
+    )
+    
+    already_following = is_following.first()
+
+    return already_following
+

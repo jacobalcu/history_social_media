@@ -85,6 +85,26 @@ def toggle_follow(username: str, db: Session = Depends(get_db), current_user_id:
     response = crud_user.toggle_follow(db, target_user.id, user_id=current_user_id)
     return response
 
+# Check if current user if following the profile
+@router.get("/{username}/follow-status")
+def check_follow_status(
+    username: str,
+    db: Session = Depends(get_db),
+    current_user_id: UUID = Depends(get_current_user_id)
+):
+    target_user = crud_user.get_user_by_username(db, username)
+
+    if not target_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    target_user_id = target_user.id
+    raw_result = crud_user.check_if_following(db, target_user_id, current_user_id)
+
+    is_following = bool(raw_result)
+    return {"is_following":is_following}
+
+
+
 # Get user followers
 # Frontend will get next "page" by changing url skip parameter
 @router.get("/{username}/followers", response_model=List[UserSlimResponse])

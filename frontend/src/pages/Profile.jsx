@@ -10,18 +10,18 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 export default function Profile() {
   // Gets username right out of browser's URL bar
   const { username } = useParams();
-  const { currentUser } = useContext(AuthContext);
+  const { currentUser, token } = useContext(AuthContext);
 
   const isOwnProfile = currentUser?.username === username;
 
   // Use to check if they are viewing own profile or other persons
-  // const isOwnProfile = (currentUser.username === username);
   // If true, can show "Edit Profile", "Drafts", hide "Follow"
   // If false, show "Follow", hide stting and edit
 
   const [profileData, setProfileData] = useState(null);
   const [articles, setArticles] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [following, setFollowing] = useState(false);
 
   useEffect(() => {
     const fetchAllProfileData = async () => {
@@ -37,6 +37,16 @@ export default function Profile() {
         // Once both return, save to React state
         setProfileData(profileResponse.data);
         setArticles(articlesResponse.data);
+
+        // We only run this if they are logged in AND it's not their own profile
+        if (token && currentUser?.username !== username) {
+          const followResponse = await axios.get(
+            `${BASE_URL}/users/${username}/follow-status`,
+            { headers: { Authorization: `Bearer ${token}` } },
+          );
+
+          setFollowing(followResponse.data.is_following);
+        }
       } catch (error) {
         console.error("Failed to fetch profile data:", error);
       } finally {
@@ -46,7 +56,36 @@ export default function Profile() {
     };
 
     fetchAllProfileData();
-  }, [username]); // Update any time new user being viewed
+  }, [username, token, currentUser]); // Update any time new user being viewed
+
+  const toggleFollow = async (e) => {
+    e.preventDefault();
+
+    try {
+      await axios.post(
+        `${BASE_URL}/users/${username}/follow`,
+        {}, // Empty body so it doesn't think the header is the body
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      const isNowFollowing = !following;
+      // Doesn't matter what backend sends as long as it was successful
+      setFollowing(isNowFollowing);
+
+      // Manually update the follower count in the profile object
+      setProfileData((prevData) => ({
+        ...prevData, // Keep all the other profile info (bio, username) exactly the same
+        followers: isNowFollowing
+          ? prevData.followers + 1 // If they just followed, add 1
+          : prevData.followers - 1, // If they just unfollowed, subtract 1
+      }));
+    } catch (error) {
+      console.error("Follow Failed:", error);
+    }
+  };
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -60,6 +99,20 @@ export default function Profile() {
   return (
     <div className="max-w-3xl mx-auto px-4">
       <ProfileHeader profileData={profileData} />
+      {!isOwnProfile && token && (
+        <div className="mt-6 mb-12">
+          <button
+            onClick={toggleFollow}
+            className={`px-8 py-2 text-xs uppercase tracking-widest transition-colors border ${
+              following
+                ? "bg-white text-gray-900 border-gray-900 hover:bg-gray-50"
+                : "bg-gray-900 text-white border-gray-900 hover:bg-black"
+            }`}
+          >
+            {following ? "Unfollow" : "Follow"}
+          </button>
+        </div>
+      )}
       <div className="mt-12 space-y-6">
         {articles.map((article) => (
           <ArticleCard key={article.id} article={article} />

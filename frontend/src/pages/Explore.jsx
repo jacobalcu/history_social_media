@@ -29,10 +29,15 @@ export default function Explore() {
   }
 
   return (
-    <div>
-      {articles.map((article) => (
-        <ArticleCard key={article.id} article={article} />
-      ))}
+    <div className="max-w-3xl mx-auto px-4 py-12">
+      <h1 className="text-3xl font-serif text-gray-900 mb-8 border-b border-gray-200 pb-4">
+        Explore Page
+      </h1>
+      <div className="space-y-6">
+        {articles.map((article) => (
+          <ArticleCard key={article.id} article={article} />
+        ))}
+      </div>
     </div>
   );
 }
