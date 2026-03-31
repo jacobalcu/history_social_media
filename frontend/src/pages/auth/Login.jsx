@@ -30,31 +30,48 @@ export default function Login() {
   };
 
   return (
-    <div>
-      <h1>Login Page</h1>
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="username">
-          Username:
-          <input
-            onChange={(e) => setUsername(e.target.value)}
-            type="text"
-            value={username}
-            id="username"
-            name="username"
-          />
-        </label>
-        <label htmlFor="password">
-          Password:
-          <input
-            onChange={(e) => setPassword(e.target.value)}
-            type="password"
-            value={password}
-            id="password"
-            name="password"
-          />
-        </label>
-        <button type="submit">Submit</button>
-      </form>
+    <div className="min-h-screen flex items-center justify-center bg-white px-4">
+      <div className="max-w-sm w-full space-y-8">
+        <h1 className="text-4xl font-serif text-gray-900 text-center">
+          Login Page
+        </h1>
+        <form onSubmit={handleSubmit}>
+          <label
+            className="block text-xs uppercase tracking-widest text-gray-500 mb-2"
+            htmlFor="username"
+          >
+            Username:
+            <input
+              className="w-full px-4 py-3 border border-gray-300 rounded-none focus:outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-colors bg-transparent"
+              onChange={(e) => setUsername(e.target.value)}
+              type="text"
+              value={username}
+              id="username"
+              name="username"
+            />
+          </label>
+          <label
+            className="block text-xs uppercase tracking-widest text-gray-500 mb-2"
+            htmlFor="password"
+          >
+            Password:
+            <input
+              className="w-full px-4 py-3 border border-gray-300 rounded-none focus:outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-colors bg-transparent"
+              onChange={(e) => setPassword(e.target.value)}
+              type="password"
+              value={password}
+              id="password"
+              name="password"
+            />
+          </label>
+          <button
+            className="w-full bg-gray-900 text-white py-4 text-sm uppercase tracking-widest hover:bg-black transition-colors mt-4"
+            type="submit"
+          >
+            Submit
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
