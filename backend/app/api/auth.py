@@ -15,9 +15,9 @@ router = APIRouter()
 @router.post("/register", response_model=UserResponse)
 def register(user: UserCreate, db: Session = Depends(get_db)):
     # Check username and email, both must be unique
-    try_email = crud_user.get_user_by_email(db, user.email)
-    if try_email:
-        raise HTTPException(status_code=400, detail="Email already taken")
+    # try_email = crud_user.get_user_by_email(db, user.email)
+    # if try_email:
+    #     raise HTTPException(status_code=400, detail="Email already taken")
     try_username = crud_user.get_user_by_username(db, user.username)
     if try_username:
         raise HTTPException(status_code=400, detail="Username already taken")

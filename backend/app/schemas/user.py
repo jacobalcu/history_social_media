@@ -6,7 +6,7 @@ from typing import Optional
 
 # For incoming data during signup
 class UserCreate(BaseModel):
-    email: EmailStr
+    email: Optional[EmailStr] = None
     username: str
     password: str = Field(..., min_length=8, max_length=72)
 

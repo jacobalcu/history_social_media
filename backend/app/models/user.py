@@ -9,7 +9,7 @@ class User(Base):
     # Store UUID as string
     id = Column(Uuid(as_uuid=True), primary_key=True, default=uuid4)
     # Store username and emails as unique strings
-    email = Column(String(255), unique=True, nullable=False)
+    email = Column(String(255), unique=True)
     username = Column(String(50), unique=True, nullable=False)
     bio = Column(String)
     hashed_password = Column(String, nullable=False)

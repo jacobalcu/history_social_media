@@ -7,6 +7,7 @@ import Navbar from "./components/Navbar";
 import Explore from "./pages/Explore";
 import WriteArticle from "./pages/WriteArticle";
 import Article from "./pages/Article";
+import Signup from "./pages/auth/Signup";
 
 function App() {
   return (
@@ -18,6 +19,8 @@ function App() {
           {/* If someone goes to root URL, redir to login */}
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+
           <Route path="/feed" element={<Home />} />
           <Route path="/profile/:username" element={<Profile />} />
           <Route path="/article/:article_id" element={<Article />} />

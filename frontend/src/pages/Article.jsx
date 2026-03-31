@@ -28,7 +28,7 @@ export default function Article() {
           const authorResponse = await axios.get(
             `${BASE_URL}/users/id/${articleData.author_id}`,
           );
-          setAuthor(authorResponse.data);
+          setAuthor(authorResponse.data.user);
         }
       } catch (error) {
         console.error("Failed to fetch data:", error);
