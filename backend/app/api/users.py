@@ -40,6 +40,27 @@ def get_profile(username: str, db: Session = Depends(get_db)):
     }
 
 
+# Return user info w/ id
+@router.get("/id/{user_id}")
+def get_profile_by_id(user_id: UUID, db: Session = Depends(get_db)):
+    # Get User by username
+    cur_user = crud_user.get_user_by_id(db, user_id)
+
+    if not cur_user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    followers = crud_user.get_follower_count(db, cur_user.id)
+    following = crud_user.get_following_count(db, cur_user.id)
+
+    # Sanitize cur_user manually
+    safe_user = UserResponse.model_validate(cur_user)
+
+    return {
+        "following": following,
+        "followers": followers,
+        "user": safe_user
+    }
+
 
 # Get user articles
 @router.get("/{username}/articles", response_model=List[ArticleResponse])

@@ -6,6 +6,7 @@ import Profile from "./pages/Profile";
 import Navbar from "./components/Navbar";
 import Explore from "./pages/Explore";
 import WriteArticle from "./pages/WriteArticle";
+import Article from "./pages/Article";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/feed" element={<Home />} />
           <Route path="/profile/:username" element={<Profile />} />
+          <Route path="/article/:article_id" element={<Article />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/new/article" element={<WriteArticle />} />
         </Routes>

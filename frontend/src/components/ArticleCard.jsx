@@ -1,6 +1,12 @@
+import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+
 export default function ArticleCard({ article }) {
   return (
-    <div className="p-6 bg-white border border-gray-200 hover:bg-gray-50 transition-colors cursor-pointer group flex flex-col">
+    <Link
+      to={`/article/${article.id}`}
+      className="p-6 bg-white border border-gray-200 hover:bg-gray-50 transition-colors cursor-pointer group flex flex-col block"
+    >
       <h2 className="text-2xl font-serif text-gray-900 mb-2">
         {article.title}
       </h2>
@@ -8,6 +14,6 @@ export default function ArticleCard({ article }) {
         {article.content}
       </p>
       <p className="text-xs text-gray-400 mt-4">{article.period_label}</p>
-    </div>
+    </Link>
   );
 }
