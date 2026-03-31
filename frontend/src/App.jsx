@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import Navbar from "./components/Navbar";
 import Explore from "./pages/Explore";
+import WriteArticle from "./pages/WriteArticle";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="/feed" element={<Home />} />
           <Route path="/profile/:username" element={<Profile />} />
           <Route path="/explore" element={<Explore />} />
+          <Route path="/new/article" element={<WriteArticle />} />
         </Routes>
       </main>
     </BrowserRouter>

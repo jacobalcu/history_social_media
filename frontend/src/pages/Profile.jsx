@@ -1,14 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import ProfileHeader from "../components/ProfileHeader";
 import ArticleCard from "../components/ArticleCard";
+import { AuthContext } from "../context/AuthContext";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function Profile() {
   // Gets username right out of browser's URL bar
   const { username } = useParams();
+  const { currentUser } = useContext(AuthContext);
+
+  const isOwnProfile = currentUser?.username === username;
 
   // Use to check if they are viewing own profile or other persons
   // const isOwnProfile = (currentUser.username === username);

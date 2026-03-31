@@ -7,8 +7,8 @@ from uuid import UUID
 class ArticleBase(BaseModel):
     title: str
     content: str
-    period_label: Optional[str]
-    historical_year: Optional[int]
+    period_label: Optional[str] = None
+    historical_year: Optional[int] = None
 
 # Create Schema: What user sends in POST request body
 class ArticleCreate(ArticleBase):
@@ -16,10 +16,10 @@ class ArticleCreate(ArticleBase):
 
 # Update schema: Every field is Optional
 class ArticleUpdate(BaseModel):
-    title: Optional[str]
-    content: Optional[str]
-    period_label: Optional[str]
-    historical_year: Optional[int]
+    title: Optional[str] = None
+    content: Optional[str] = None
+    period_label: Optional[str] = None
+    historical_year: Optional[int] = None
 
 # Response Schema: What API returns back to client
 class ArticleResponse(ArticleBase):
@@ -27,8 +27,8 @@ class ArticleResponse(ArticleBase):
     author_id: UUID
     title: str
     content: str
-    period_label: Optional[str]
-    historical_year: Optional[int]
+    period_label: Optional[str] = None
+    historical_year: Optional[int] = None
     created_at: datetime
 
     # Tells Pydantic to read data even if it's not a dict

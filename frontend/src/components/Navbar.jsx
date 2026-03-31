@@ -35,6 +35,14 @@ export default function Navbar() {
         {token && (
           <Link
             className="text-xs uppercase tracking-widest text-gray-500 hover:text-gray-900 transition-colors"
+            to={`/new/article`}
+          >
+            Write Article
+          </Link>
+        )}
+        {token && (
+          <Link
+            className="text-xs uppercase tracking-widest text-gray-500 hover:text-gray-900 transition-colors"
             to={`/profile/${currentUser?.username}`}
           >
             Profile
