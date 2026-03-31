@@ -5,7 +5,7 @@ import { AuthContext } from "../context/AuthContext";
 export default function Navbar() {
   const navigate = useNavigate();
 
-  const { logout, token } = useContext(AuthContext);
+  const { logout, token, currentUser } = useContext(AuthContext);
 
   const handleLogout = () => {
     logout();
@@ -24,6 +24,23 @@ export default function Navbar() {
         >
           Explore
         </Link>
+        {token && (
+          <Link
+            className="text-xs uppercase tracking-widest text-gray-500 hover:text-gray-900 transition-colors"
+            to={`/feed`}
+          >
+            My Feed
+          </Link>
+        )}
+        {token && (
+          <Link
+            className="text-xs uppercase tracking-widest text-gray-500 hover:text-gray-900 transition-colors"
+            to={`/profile/${currentUser?.username}`}
+          >
+            Profile
+          </Link>
+        )}
+
         {!token && (
           <Link
             className="text-xs uppercase tracking-widest text-gray-500 hover:text-gray-900 transition-colors"

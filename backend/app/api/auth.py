@@ -40,7 +40,7 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
         raise HTTPException(status_code=401, detail="Incorrect email or password")
 
     # Assign access token later
-    access_token = create_access_token({"sub": str(try_user.id)})
+    access_token = create_access_token({"sub": str(try_user.id), "username": user.username})
 
     return {"access_token":access_token, "token_type":"bearer"}
 
