@@ -9,10 +9,12 @@ import WriteArticle from "./pages/WriteArticle";
 import Article from "./pages/Article";
 import Signup from "./pages/auth/Signup";
 import Footer from "./components/Footer";
+import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       {/* Stays at top no matter what pages */}
       <Navbar />
       <main className="min-h-screen bg-white">
