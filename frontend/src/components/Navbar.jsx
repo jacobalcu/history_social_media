@@ -15,9 +15,12 @@ export default function Navbar() {
   return (
     <nav className="w-full bg-white border-b border-gray-200 px-4 py-4">
       <div className="max-w-5xl mx-auto flex justify-between items-center">
-        <p className="text-2xl font-serif font-bold text-gray-900 tracking-tighter">
+        <Link
+          to="/feed"
+          className="text-2xl font-serif font-bold text-gray-900 tracking-tighter"
+        >
           History Times
-        </p>
+        </Link>
         <Link
           className="text-xs uppercase tracking-widest text-gray-500 hover:text-gray-900 transition-colors"
           to="/explore"

@@ -8,6 +8,7 @@ import Explore from "./pages/Explore";
 import WriteArticle from "./pages/WriteArticle";
 import Article from "./pages/Article";
 import Signup from "./pages/auth/Signup";
+import Footer from "./components/Footer";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
           <Route path="/new/article" element={<WriteArticle />} />
         </Routes>
       </main>
+      <Footer />
     </BrowserRouter>
   );
 }
