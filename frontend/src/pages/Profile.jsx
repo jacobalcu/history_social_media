@@ -22,11 +22,6 @@ export default function Profile() {
   const [articles, setArticles] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [following, setFollowing] = useState(false);
-  const [modalConfig, setModalConfig] = useState({
-    isOpen: false,
-    title: "",
-    endpoint: "",
-  });
 
   useEffect(() => {
     const fetchAllProfileData = async () => {
@@ -90,27 +85,6 @@ export default function Profile() {
     } catch (error) {
       console.error("Follow Failed:", error);
     }
-  };
-
-  // Set modal config
-  const openFollowers = () => {
-    setModalConfig({
-      isOpen: true,
-      title: "Followers",
-      endpoint: `${BASE_URL}/users/${username}/followers`,
-    });
-  };
-
-  const openFollowing = () => {
-    setModalConfig({
-      isOpen: true,
-      title: "Following",
-      endpoint: `${BASE_URL}/users/${username}/following`,
-    });
-  };
-
-  const closeModal = () => {
-    setModalConfig({ ...modalConfig, isOpen: false });
   };
 
   if (isLoading) {
