@@ -18,11 +18,30 @@ def create_article(article: ArticleCreate, user_id: UUID = Depends(get_current_u
     new_article = crud_article.create_article(db, article, user_id)
     return new_article
 
-@router.get("/{article_id}", response_model=ArticleResponse)
+@router.get("/{article_id}")
 def get_article(article_id: UUID, db: Session = Depends(get_db)):
     # Get article by id
     article = crud_article.get_one_article(db, article_id)
-    return article
+    
+    if not article:
+        raise HTTPException(status_code=404, detail="Article not found")
+
+    safe_article = ArticleResponse.model_validate(article)
+    number_likes = crud_article.get_article_likes(db, article_id)
+    return {
+        "likes": number_likes,
+        "article":safe_article
+    }
+
+@router.get("/{article_id}/like-status")
+def check_article_like_status(
+    article_id: UUID,
+    db: Session = Depends(get_db),
+    current_user_id: UUID = Depends(get_current_user_id)
+):
+    raw_result = crud_article.check_if_liked(db, article_id, current_user_id)
+
+    return {"is_liked": bool(raw_result)}
 
 # Delete article
 @router.delete("/{article_id}")

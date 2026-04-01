@@ -6,6 +6,7 @@ from app.models.associations import article_likes, user_follows
 from app.schemas.article import ArticleCreate, ArticleResponse, ArticleUpdate
 from datetime import datetime
 from typing import Optional
+from sqlalchemy import insert, delete
 
 def create_article(db: Session, article: ArticleCreate, user_id: UUID):
     new_article = Article(
@@ -98,36 +99,45 @@ def delete_article(db: Session, article_id: UUID, user_id: UUID):
         return True
     
     return False
+
+# Return number likes an article has
+def get_article_likes(db: Session, article_id: UUID):
+    return db.query(article_likes).filter(
+        article_likes.c.article_id == article_id
+    ).count()
+
+# Check if user already liked the article
+def check_if_liked(db: Session, article_id: UUID, user_id: UUID):
+    already_liked = db.query(article_likes).filter(
+        article_likes.c.article_id == article_id,
+        article_likes.c.user_id == user_id
+    )
+
+    return already_liked.first()
+
     
 
 # Like/unlike an article
 def toggle_like(db: Session, article_id: UUID, user_id: UUID):
     # Check if user already liked
-    user_likes = db.query(article_likes).filter(
-        article_likes.c.user_id == user_id,
-        article_likes.c.article_id == article_id
-    )
+    existing_like = check_if_liked(db, article_id, user_id)
 
     # If user already liked
-    if user_likes.first():
+    if existing_like:
         # Unlike
-        statement = article_likes.delete().where(
-            (article_likes.c.user_id==user_id) &
-            (article_likes.c.article_id==article_id)
+        stmt = delete(article_likes).where(
+            article_likes.c.article_id == article_id,
+            article_likes.c.user_id == user_id
         )
+        db.execute(stmt)
+        db.commit()
+        return {"is_liked": False}
     else: # User hasn't like the article
         # Like it
-        statement = article_likes.insert().values(
-            user_id=user_id,
-            article_id=article_id
+        stmt = insert(article_likes).values(
+            article_id=article_id, 
+            user_id=user_id
         )
-    
-    db.execute(statement)
-    db.commit()
-
-    # Return the new state so the frontend knows what to display
-    if user_likes.first():
-        return {"message": "Article unliked", "liked": False}
-    else:
-        return {"message": "Article liked", "liked": True} 
-
+        db.execute(stmt)
+        db.commit()
+        return {"is_liked": True}
