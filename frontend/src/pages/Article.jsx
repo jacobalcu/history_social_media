@@ -1,19 +1,41 @@
 import { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function Article() {
   const { article_id } = useParams();
-  const { token } = useContext(AuthContext);
+  const { token, currentUser } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const [error, setError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [article, setArticle] = useState(null);
   const [author, setAuthor] = useState(null);
   const [alreadyLiked, setAlreadyLiked] = useState(false);
+
+  const isAuthor = currentUser?.id === article?.article?.author_id;
+
+  const handleDelete = async () => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this article? This action cannot be undone.",
+    );
+    if (!confirmed) return;
+
+    try {
+      await axios.delete(`${BASE_URL}/articles/${article_id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      navigate(`/profile/${currentUser.username}`);
+    } catch (error) {
+      console.error("Failed to delete article:", error);
+      alert("Something went wrong trying to delete this article.");
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -136,6 +158,23 @@ export default function Article() {
                 </p>
               )}
             </div>
+          </div>
+        )}
+
+        {isAuthor && (
+          <div className="flex gap-6 mt-8 pt-6 border-t border-gray-50">
+            <Link
+              to={`/edit/article/${article_id}`}
+              className="text-xs uppercase tracking-widest text-gray-400 hover:text-gray-900 transition-colors border-b border-transparent hover:border-gray-900 pb-0.5"
+            >
+              Edit Article
+            </Link>
+            <button
+              onClick={handleDelete}
+              className="text-xs uppercase tracking-widest text-red-300 hover:text-red-600 transition-colors border-b border-transparent hover:border-red-600 pb-0.5"
+            >
+              Delete Article
+            </button>
           </div>
         )}
       </header>

@@ -10,6 +10,7 @@ import Article from "./pages/Article";
 import Signup from "./pages/auth/Signup";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
+import EditArticle from "./pages/EditArticle";
 
 function App() {
   return (
@@ -27,6 +28,8 @@ function App() {
           <Route path="/feed" element={<Home />} />
           <Route path="/profile/:username" element={<Profile />} />
           <Route path="/article/:article_id" element={<Article />} />
+          <Route path="/edit/article/:article_id" element={<EditArticle />} />
+
           <Route path="/explore" element={<Explore />} />
           <Route path="/new/article" element={<WriteArticle />} />
         </Routes>
