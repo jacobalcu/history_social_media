@@ -64,7 +64,9 @@ export function AuthProvider({ children }) {
 
   // Wrap entire application in AuthProvider, giving everything access to these values
   return (
-    <AuthContext.Provider value={{ token, currentUser, login, logout }}>
+    <AuthContext.Provider
+      value={{ setCurrentUser, token, currentUser, login, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );

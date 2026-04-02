@@ -32,6 +32,28 @@ def create_user(db: Session, user: UserCreate):
     # 4. Return the new user object
     return new_user
 
+def update_user(db: Session, user_id: UUID, user_update: UserUpdate):
+    user = db.query(User).filter(
+        User.id == user_id,
+    ).first()
+
+    if not user:
+        return None
+
+    update_data = user_update.model_dump(exclude_unset=True)
+
+    # Check if password was modified
+    if "password" in update_data:
+        update_data["password"] = hash_password(update_data["password"])
+
+    for key, value in update_data.items():
+        setattr(user, key, value)
+
+    db.commit()
+    db.refresh(user)
+
+    return user
+
 # Return number of followers of user
 def get_follower_count(db: Session, user_id: UUID):
     # .count() tells the database to just send back an integer, ignoring the row data!

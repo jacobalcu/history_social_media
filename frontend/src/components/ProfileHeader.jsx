@@ -1,9 +1,14 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import FollowModal from "./FollowModal";
+import { Link } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function ProfileHeader({ profileData }) {
+  const { currentUser } = useContext(AuthContext);
+  const isOwnProfile = currentUser?.username === profileData.user.username;
+
   const [modalConfig, setModalConfig] = useState({
     isOpen: false,
     title: "",
@@ -67,6 +72,16 @@ export default function ProfileHeader({ profileData }) {
           </span>
         </button>
       </div>
+      {isOwnProfile && (
+        <div className="flex gap-6 mt-8 pt-6 border-t border-gray-50">
+          <Link
+            to={`/edit/profile/`}
+            className="text-xs uppercase tracking-widest text-gray-400 hover:text-gray-900 transition-colors border-b border-transparent hover:border-gray-900 pb-0.5"
+          >
+            Edit Profile
+          </Link>
+        </div>
+      )}
 
       {modalConfig.isOpen && (
         <FollowModal

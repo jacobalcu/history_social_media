@@ -16,10 +16,10 @@ class UserLogin(BaseModel):
 
 # Every field is optional
 class UserUpdate(BaseModel):
-    email: Optional[EmailStr]
-    username: Optional[str]
-    password: Optional[str]
-    bio: Optional[str]
+    email: Optional[EmailStr] = None
+    username: Optional[str] = None
+    password: Optional[str] = None
+    bio: Optional[str] = None
 
 
 # Response Schema: What API returns back to client

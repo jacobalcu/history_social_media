@@ -14,9 +14,20 @@ router = APIRouter()
 
 
 # Edit user info
-@router.put("/profile", response_model=UserResponse)
-def edit_profile(user_update: UserUpdate, db: Session = Depends(get_db), user_id: UUID = Depends(get_current_user_id)):
-    pass
+@router.patch("/edit", response_model=UserResponse)
+def update_profile(user_update: UserUpdate, db: Session = Depends(get_db), user_id: UUID = Depends(get_current_user_id)):
+    try:
+        # Have to try because they could try inputting username that is already taken
+        user = crud_user.update_user(db, user_id, user_update)
+
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=409, detail="Try a different email/username")
+        
+
+    return user
 
 # Return user info
 @router.get("/{username}")
