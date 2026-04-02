@@ -1,6 +1,6 @@
 from app.db.database import Base
 from sqlalchemy.orm import relationship
-from sqlalchemy import Column, Uuid, String, DateTime, func, ForeignKey, Integer, Text
+from sqlalchemy import Column, Uuid, String, DateTime, func, ForeignKey, Integer, Text, Boolean
 from uuid import uuid4
 from app.models.associations import article_likes
 
@@ -19,6 +19,8 @@ class Article(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
+    # Need index since we have to access this for crud operations
+    is_deleted = Column(Boolean, default=False, server_default="false", index=True)
     # Allows easy python access later
     # e.g. article.author.username
     author = relationship("User")

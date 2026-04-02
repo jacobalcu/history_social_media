@@ -11,22 +11,15 @@ export default function ArticleCard({ article }) {
         {article.title}
       </h2>
 
-      {/* 1. Removed the wrapping <p> tag!
-        2. Changed prose-lg to prose-sm.
-        3. Moved line-clamp directly onto this div.
-        4. Added prose-p:my-0 so internal paragraphs don't add massive gaps in the preview.
-      */}
       <div
         className="prose prose-sm prose-gray max-w-none font-sans text-gray-600 line-clamp-3 prose-p:my-0 mb-6"
         dangerouslySetInnerHTML={{ __html: article.content }}
       />
 
       {/* Added mt-auto to push this to the absolute bottom of the card */}
-      {article.period_label && (
-        <p className="text-xs text-gray-400 mt-auto uppercase tracking-widest font-semibold">
-          {article.period_label}
-        </p>
-      )}
+      <p className="text-xs text-gray-400 mt-auto uppercase tracking-widest font-semibold">
+        {article.period_label}
+      </p>
     </Link>
   );
 }

@@ -24,7 +24,9 @@ def create_article(db: Session, article: ArticleCreate, user_id: UUID):
 # Add skip and limit for pagination
 def get_author_articles(db: Session, author_id: UUID, skip: int = 0, limit: int = 10):
     articles = db.query(Article)\
-        .filter(Article.author_id == author_id)\
+        .filter(
+            Article.author_id == author_id,
+            ~Article.is_deleted)\
         .order_by(Article.created_at.desc())\
         .offset(skip)\
         .limit(limit)\
@@ -35,6 +37,7 @@ def get_author_articles(db: Session, author_id: UUID, skip: int = 0, limit: int 
 # Add skip and limit for pagination
 def get_explore_feed(db: Session, skip: int = 0, limit: int = 10):
     articles = db.query(Article)\
+        .filter(~Article.is_deleted)\
         .order_by(Article.created_at.desc())\
         .offset(skip)\
         .limit(limit)\
@@ -50,7 +53,9 @@ def get_personal_feed(db: Session, user_id: UUID, skip: int = 0, limit: int = 10
     )
     
     articles = db.query(Article)\
-        .filter(Article.author_id.in_(following_subquery))\
+        .filter(
+            Article.author_id.in_(following_subquery),
+            ~Article.is_deleted)\
         .order_by(Article.created_at.desc())\
         .offset(skip)\
         .limit(limit)\
@@ -60,7 +65,9 @@ def get_personal_feed(db: Session, user_id: UUID, skip: int = 0, limit: int = 10
 
 # Get article by id
 def get_one_article(db: Session, article_id: UUID):
-    articles = db.query(Article).filter(Article.id == article_id)
+    articles = db.query(Article).filter(
+        Article.id == article_id,
+        ~Article.is_deleted)
     return articles.first()
 
 # Get all articles, ordered, also paginated
@@ -69,7 +76,8 @@ def get_one_article(db: Session, article_id: UUID):
 def update_article(db: Session, article_id: UUID, user_id: UUID, article_update: ArticleUpdate):
     article = db.query(Article).filter(
         Article.id == article_id,
-        Article.author_id == user_id).first()
+        Article.author_id == user_id,
+        ~Article.is_deleted).first()
     
     # Return None so router knows it failed
     if not article:
@@ -91,14 +99,18 @@ def update_article(db: Session, article_id: UUID, user_id: UUID, article_update:
 def delete_article(db: Session, article_id: UUID, user_id: UUID):
     del_article = db.query(Article).filter(
         Article.id == article_id,
-        Article.author_id == user_id).first()
+        Article.author_id == user_id,
+        ~Article.is_deleted).first()
 
-    if del_article:
-        db.delete(del_article)
-        db.commit()
-        return True
+    if not del_article:
+        return False
+
+    del_article.is_deleted = True
+    db.commit()
+
+    return True
     
-    return False
+    
 
 # Return number likes an article has
 def get_article_likes(db: Session, article_id: UUID):

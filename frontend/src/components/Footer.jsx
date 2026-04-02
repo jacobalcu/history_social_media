@@ -9,9 +9,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8">
           {/* Brand Section */}
           <div className="md:col-span-1">
-            <h2 className="text-xl font-serif text-gray-900 mb-4">
-              The Nouns of History
-            </h2>
+            <h2 className="text-xl font-serif text-gray-900 mb-4">Kairos</h2>
             <p className="text-sm text-gray-500 leading-relaxed mb-6">
               An open archive exploring the people, places, and events that
               shaped the world.

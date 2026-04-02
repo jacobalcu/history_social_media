@@ -19,7 +19,7 @@ export default function Navbar() {
           to="/feed"
           className="text-2xl font-serif font-bold text-gray-900 tracking-tighter"
         >
-          History Times
+          Kairos
         </Link>
         <Link
           className="text-xs uppercase tracking-widest text-gray-500 hover:text-gray-900 transition-colors"
