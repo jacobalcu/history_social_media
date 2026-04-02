@@ -2,6 +2,7 @@ import axios from "axios";
 import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate, useParams } from "react-router-dom";
+import RichTextEditor from "../components/RichTextEditor";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -86,15 +87,7 @@ export default function EditArticle() {
         className="w-full text-5xl font-serif text-gray-900 placeholder-gray-300 focus:outline-none bg-transparent"
         required
       />
-      <textarea
-        onChange={(e) => setContent(e.target.value)}
-        value={content}
-        id="content"
-        name="content"
-        placeholder="Start writing your history..."
-        className="w-full min-h-[500px] text-lg text-gray-800 leading-relaxed placeholder-gray-300 focus:outline-none bg-transparent resize-none"
-        required
-      />
+      <RichTextEditor content={content} onChange={setContent} />
       <button
         className="w-full bg-gray-900 text-white py-4 text-sm uppercase tracking-widest hover:bg-black transition-colors mt-4"
         type="submit"

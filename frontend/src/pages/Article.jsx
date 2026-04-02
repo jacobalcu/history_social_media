@@ -181,9 +181,13 @@ export default function Article() {
 
       {/* --- CONTENT SECTION --- */}
       {/* whitespace-pre-wrap keeping paragraphs intact */}
-      <div className="text-lg md:text-xl text-gray-800 leading-relaxed whitespace-pre-wrap font-sans">
+      {/* <div className="text-lg md:text-xl text-gray-800 leading-relaxed whitespace-pre-wrap font-sans">
         {article.article.content}
-      </div>
+      </div> */}
+      <div
+        className="prose prose-lg prose-gray max-w-none font-sans"
+        dangerouslySetInnerHTML={{ __html: article.article.content }}
+      />
 
       {/* --- NEW LIKE BUTTON SECTION --- */}
       <div className="mt-16 pt-8 border-t border-gray-100 flex items-center">
