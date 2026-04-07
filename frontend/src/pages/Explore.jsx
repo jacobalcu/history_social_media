@@ -25,7 +25,11 @@ export default function Explore() {
   }, []);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="max-w-3xl mx-auto px-4 py-12 text-center text-gray-500">
+        Loading your feed...
+      </div>
+    );
   }
 
   return (
