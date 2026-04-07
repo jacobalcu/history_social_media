@@ -12,7 +12,7 @@ load_dotenv()
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # Import database URL, Base, and models
-from app.db.database import Base, SQLALCHEMY_DATABASE_URL
+from app.db.database import Base
 from app.models.user import User
 from app.models.article import Article
 
@@ -23,8 +23,6 @@ config = context.config
 database_url = os.getenv("DATABASE_URL")
 if database_url:
     config.set_main_option("sqlalchemy.url", database_url)
-
-config.set_main_option("sqlalchemy.url", SQLALCHEMY_DATABASE_URL)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -74,8 +72,18 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
+    # Grab the config dictionary
+    configuration = config.get_section(config.config_ini_section)
+
+    # Force the dictionary to use the .env URL we set at the top!
+    configuration["sqlalchemy.url"] = config.get_main_option("sqlalchemy.url")
+    
+    print("===========================================")
+    print(f"ALEMBIC IS USING: {configuration.get('sqlalchemy.url')}")
+    print("===========================================")
+
     connectable = engine_from_config(
-        config.get_section(config.config_ini_section, {}),
+        configuration,
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
