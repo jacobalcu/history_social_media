@@ -70,7 +70,18 @@ def get_one_article(db: Session, article_id: UUID):
         ~Article.is_deleted)
     return articles.first()
 
-# Get all articles, ordered, also paginated
+#Search by tag
+def get_articles_by_tag(db: Session, tag: str, skip: int = 0, limit: int = 10):
+    articles = db.query(Article)\
+        .filter(
+            Article.tags.any(tag), # Checks if tag is in array
+            ~Article.is_deleted
+        )\
+        .order_by(Article.created_at.desc())\
+        .offset(skip)\
+        .limit(limit)\
+        .all()
+    return articles
 
 # Update article
 def update_article(db: Session, article_id: UUID, user_id: UUID, article_update: ArticleUpdate):

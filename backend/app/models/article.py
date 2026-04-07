@@ -1,5 +1,6 @@
 from app.db.database import Base
 from sqlalchemy.orm import relationship
+from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy import Column, Uuid, String, DateTime, func, ForeignKey, Integer, Text, Boolean
 from uuid import uuid4
 from app.models.associations import article_likes
@@ -12,6 +13,9 @@ class Article(Base):
     title = Column(String(255), nullable=False)
     content = Column(Text, nullable=False)
     period_label = Column(String(40))
+
+    # tags for searching
+    tags = Column(ARRAY(String), default=list, index=True)
 
     # BC will be negative
     historical_year = Column(Integer)

@@ -7,6 +7,8 @@ from app.schemas.article import ArticleCreate, ArticleResponse, ArticleUpdate
 from app.crud import crud_article
 from app.db.database import get_db
 from app.api.auth import get_current_user_id
+from typing import List
+
 
 # Default route will be /articles
 router = APIRouter()
@@ -74,6 +76,12 @@ def toggle_like(article_id: UUID, user_id: UUID = Depends(get_current_user_id), 
     # Add to users liked
     response = crud_article.toggle_like(db, article_id, user_id)
     return response
+
+# Use query parameter (/search?tag=rome)
+@router.get("/search", response_model=List[ArticleResponse])
+def search_articles(tag: str, skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    articles = crud_article.get_articles_by_tag(db=db, tag=tag, skip=skip, limit=limit)
+    return articles
 
 
 
