@@ -6,8 +6,10 @@ from sqlalchemy.orm import Session
 from app.schemas.article import ArticleCreate, ArticleResponse, ArticleUpdate
 from app.crud import crud_article
 from app.db.database import get_db
+from app.db.redis import redis_client
 from app.api.auth import get_current_user_id
 from typing import List
+import logging
 
 
 # Default route will be /articles
@@ -15,9 +17,17 @@ router = APIRouter()
 
 # Create new article
 @router.post("/", response_model=ArticleResponse)
-def create_article(article: ArticleCreate, user_id: UUID = Depends(get_current_user_id), db: Session = Depends(get_db)):
+async def create_article(article: ArticleCreate, user_id: UUID = Depends(get_current_user_id), db: Session = Depends(get_db)):
     # Create article, connect to user_id
     new_article = crud_article.create_article(db, article, user_id)
+
+    # Delete from cache so next person to load gets new data
+    try:
+        await redis_client.delete("explore_feed")
+    except Exception as e:
+        # If Redis is offline, log the error but don't crash the server.
+        logging.error(f"Redis cache invalidation failed: {e}")    
+    
     return new_article
 
 @router.get("/{article_id}")
@@ -47,23 +57,37 @@ def check_article_like_status(
 
 # Delete article
 @router.delete("/{article_id}")
-def delete_article(article_id: UUID, db: Session = Depends(get_db), user_id: UUID = Depends(get_current_user_id)):
+async def delete_article(article_id: UUID, db: Session = Depends(get_db), user_id: UUID = Depends(get_current_user_id)):
     # Get article by id
     wasDeleted = crud_article.delete_article(db, article_id, user_id)
     
     if not wasDeleted:
         raise HTTPException(status_code=404, detail="Delete Failed")
+
+    # Delete from cache so next person to load gets new data
+    try:
+        await redis_client.delete("explore_feed")
+    except Exception as e:
+        # If Redis is offline, log the error but don't crash the server.
+        logging.error(f"Redis cache invalidation failed: {e}") 
     
     return {"message": "Article deleted successfully"}
 
 # Put implies "replace whole thing"
 # Patch implies "partially update"
 @router.patch("/{article_id}", response_model=ArticleResponse)
-def update_article(article_id: UUID, article_update: ArticleUpdate, db: Session = Depends(get_db), user_id: UUID = Depends(get_current_user_id)):
+async def update_article(article_id: UUID, article_update: ArticleUpdate, db: Session = Depends(get_db), user_id: UUID = Depends(get_current_user_id)):
     article = crud_article.update_article(db, article_id, user_id, article_update)
 
     if not article:
         raise HTTPException(status_code=404, detail="Article not found")
+
+    # Delete from cache so next person to load gets new data
+    try:
+        await redis_client.delete("explore_feed")
+    except Exception as e:
+        # If Redis is offline, log the error but don't crash the server.
+        logging.error(f"Redis cache invalidation failed: {e}") 
     
     return article
 
