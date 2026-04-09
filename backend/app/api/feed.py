@@ -35,19 +35,25 @@ async def get_explore_feed(
     limit: int = 10, 
     db: Session = Depends(get_db)
 ):
+    # In case the user goes really deep
+    if skip >= 100:
+        print("Deep scroll detected: Serving older articles directly from PostgreSQL")
+        return crud_article.get_explore_feed(db, skip=skip, limit=limit)
+        
     # Check the cache
     # await async call for "explore_feed" key
     cached_feed = await redis_client.get("explore_feed")
 
     if cached_feed:
         print("Serving from Redis cache")
-        # Convert from JSON string back to Python list and return instantly
-        return json.loads(cached_feed)
+        # Convert from JSON string back to Python list and return instantly 
+        master_list = json.loads(cached_feed)
+        return master_list[skip : skip + limit]
 
     print("Serving from PostgreSQL")
     # Retrieves a global, chronological feed of all articles.
     # Does not require authentication (public view)
-    articles = crud_article.get_explore_feed(db, skip, limit)
+    articles = crud_article.get_explore_feed(db, skip=0, limit=100)
 
     # Serialize and add to cache
     
@@ -60,4 +66,4 @@ async def get_explore_feed(
 
     await redis_client.setex("explore_feed", 60, stringified_data)
     
-    return serializable_data
+    return serializable_data[skip : skip + limit]
