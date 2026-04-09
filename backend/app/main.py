@@ -8,9 +8,17 @@ app = FastAPI(
     version="0.1.0"
 )
 
+origins = [
+    "https://history-social-media.vercel.app",
+    "http://localhost:5173", 
+    "http://127.0.0.1:5173",
+    "https://kairoshistory.com",      # <--- Add this!
+    "https://www.kairoshistory.com"   # <--- Add this too!
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://history-social-media.vercel.app","http://localhost:5173", "http://127.0.0.1:5173"],    
+    allow_origins=origins,    
     allow_credentials = True,
     allow_methods=["*"], # allows GET, POST, PUT, DELETE, etc
     allow_headers=["*"], # Allows all headers (like our Authorization header)
