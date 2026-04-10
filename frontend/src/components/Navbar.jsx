@@ -16,7 +16,7 @@ export default function Navbar() {
     <nav className="w-full bg-white border-b border-gray-200 px-4 py-4">
       <div className="max-w-5xl mx-auto flex justify-between items-center">
         <Link
-          to="/feed"
+          to="/explore"
           className="text-2xl font-serif font-bold text-gray-900 tracking-tighter"
         >
           Kairos
