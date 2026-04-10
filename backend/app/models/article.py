@@ -1,9 +1,11 @@
 from app.db.database import Base
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import ARRAY
-from sqlalchemy import Column, Uuid, String, DateTime, func, ForeignKey, Integer, Text, Boolean
+from sqlalchemy import Column, Uuid, String, DateTime, func, ForeignKey, Integer, Text, Boolean, Computed, Index
 from uuid import uuid4
+from sqlalchemy.dialects.postgresql import TSVECTOR
 from app.models.associations import article_likes
+
 
 class Article(Base):
     __tablename__ = 'articles'
@@ -14,8 +16,18 @@ class Article(Base):
     content = Column(Text, nullable=False)
     period_label = Column(String(40))
 
-    # tags for searching
-    tags = Column(ARRAY(String), default=list, index=True)
+    # Computed Column
+    # persisted=True is saved to hard drive, becomes searchable
+    search_vector = Column(
+        TSVECTOR,
+        Computed("to_tsvector('english', title || ' ' || coalesce(content, ''))",
+        persisted=True)
+    )
+
+    # GIN Index on the new column
+    __table_args__ = (
+        Index('ix_article_search_vector', 'search_vector', postgresql_using='gin'),
+    )
 
     # BC will be negative
     historical_year = Column(Integer)

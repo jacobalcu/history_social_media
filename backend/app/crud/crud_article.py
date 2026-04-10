@@ -170,15 +170,11 @@ def search_articles(db: Session, search_query: str, skip: int = 0, limit: int = 
     # Convert user strings into tsquery
     query_vector = func.plainto_tsquery('english', search_query)
 
-    # Convert articles title and content into tsvector
-    # Concat w/ space to search at same time
-    document_vector = func.to_tsvector('english', Article.title + ' ' + Article.content)
-
     # Use @@ operator to find matches
     # Order by rank
     results = db.query(Article)\
-        .filter(document_vector.op('@@')(query_vector))\
-        .order_by(func.ts_rank(document_vector, query_vector).desc())\
+        .filter(Article.search_vector.op('@@')(query_vector))\
+        .order_by(func.ts_rank(Article.search_vector, query_vector).desc())\
         .offset(skip)\
         .limit(limit)\
         .all()
