@@ -27,6 +27,12 @@ export default function Navbar() {
         >
           Explore
         </Link>
+        <Link
+          className="text-xs uppercase tracking-widest text-gray-500 hover:text-gray-900 transition-colors"
+          to="/articles/search"
+        >
+          Search
+        </Link>
         {token && (
           <Link
             className="text-xs uppercase tracking-widest text-gray-500 hover:text-gray-900 transition-colors"

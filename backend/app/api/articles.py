@@ -30,6 +30,17 @@ async def create_article(article: ArticleCreate, user_id: UUID = Depends(get_cur
     
     return new_article
 
+# Use query parameter (/search?q=rome&skip=0&limit=10)
+@router.get("/search", response_model=List[ArticleResponse])
+async def search_articles(
+    q: str = Query(..., min_length=2, description="Search query"),
+    skip: int = 0, limit: int = 10, 
+    db: Session = Depends(get_db)
+):
+    articles = crud_article.search_articles(db=db, search_query=q, skip=skip, limit=limit)
+    return articles
+
+
 @router.get("/{article_id}")
 def get_article(article_id: UUID, db: Session = Depends(get_db)):
     # Get article by id
@@ -101,15 +112,6 @@ def toggle_like(article_id: UUID, user_id: UUID = Depends(get_current_user_id), 
     response = crud_article.toggle_like(db, article_id, user_id)
     return response
 
-# Use query parameter (/search?q=rome&skip=0&limit=10)
-@router.get("/search", response_model=List[ArticleResponse])
-async def search_articles(
-    q: str = Query(..., min_length=2, description="Search query"),
-    skip: int = 0, limit: int = 10, 
-    db: Session = Depends(get_db)
-):
-    articles = crud_article.search_articles(db=db, search_query=q, skip=skip, limit=limit)
-    return articles
 
 
 
