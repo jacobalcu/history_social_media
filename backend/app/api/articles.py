@@ -1,7 +1,7 @@
 # Feed, creating posts, historical tags
 # User profiles, follows
 from uuid import UUID
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from app.schemas.article import ArticleCreate, ArticleResponse, ArticleUpdate
 from app.crud import crud_article
@@ -101,10 +101,14 @@ def toggle_like(article_id: UUID, user_id: UUID = Depends(get_current_user_id), 
     response = crud_article.toggle_like(db, article_id, user_id)
     return response
 
-# Use query parameter (/search?tag=rome)
+# Use query parameter (/search?q=rome&skip=0&limit=10)
 @router.get("/search", response_model=List[ArticleResponse])
-def search_articles(tag: str, skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    articles = crud_article.get_articles_by_tag(db=db, tag=tag, skip=skip, limit=limit)
+async def search_articles(
+    q: str = Query(..., min_length=2, description="Search query"),
+    skip: int = 0, limit: int = 10, 
+    db: Session = Depends(get_db)
+):
+    articles = crud_article.search_articles(db=db, search_query=q, skip=skip, limit=limit)
     return articles
 
 

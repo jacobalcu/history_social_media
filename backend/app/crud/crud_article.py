@@ -6,7 +6,7 @@ from app.models.associations import article_likes, user_follows
 from app.schemas.article import ArticleCreate, ArticleResponse, ArticleUpdate
 from datetime import datetime
 from typing import Optional
-from sqlalchemy import insert, delete
+from sqlalchemy import insert, delete, func
 
 def create_article(db: Session, article: ArticleCreate, user_id: UUID):
     new_article = Article(
@@ -164,3 +164,23 @@ def toggle_like(db: Session, article_id: UUID, user_id: UUID):
         db.execute(stmt)
         db.commit()
         return {"is_liked": True}
+
+
+def search_articles(db: Session, search_query: str, skip: int = 0, limit: int = 10):
+    # Convert user strings into tsquery
+    query_vector = func.plainto_tsquery('english', search_query)
+
+    # Convert articles title and content into tsvector
+    # Concat w/ space to search at same time
+    document_vector = func.to_tsvector('english', Article.title + ' ' + Article.content)
+
+    # Use @@ operator to find matches
+    # Order by rank
+    results = db.query(Article)\
+        .filter(document_vector.op('@@')(query_vector))\
+        .order_by(func.ts_rank(document_vector, query_vector).desc())\
+        .offset(skip)\
+        .limit(limit)\
+        .all()
+    
+    return results
