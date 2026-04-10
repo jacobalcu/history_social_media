@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api import auth, users, articles, feed
+from app.api import auth, users, articles, feed, notifications
 
 app = FastAPI(
     title="History Social Media API",
@@ -9,11 +9,14 @@ app = FastAPI(
 )
 
 origins = [
-    "https://history-social-media.vercel.app",
+    # Local
     "http://localhost:5173", 
     "http://127.0.0.1:5173",
-    "https://kairoshistory.com",      # <--- Add this!
-    "https://www.kairoshistory.com"   # <--- Add this too!
+
+    # Production
+    "https://history-social-media.vercel.app",
+    "https://kairoshistory.com",     
+    "https://www.kairoshistory.com"   
 ]
 
 app.add_middleware(
@@ -28,6 +31,7 @@ app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
 app.include_router(users.router, prefix="/users", tags=["Users"])
 app.include_router(articles.router, prefix="/articles", tags=["Articles"])
 app.include_router(feed.router, prefix="/feed", tags=["Feed"])
+app.include_router(notifications.router, prefix="/ws", tags=["Notifications"])
 
 
 

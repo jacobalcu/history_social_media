@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import ProfileHeader from "../components/ProfileHeader";
 import ArticleCard from "../components/ArticleCard";
 import { AuthContext } from "../context/AuthContext";
+import WebSocketTest from "../components/WebSocketTest";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
